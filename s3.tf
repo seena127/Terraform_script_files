@@ -7,6 +7,8 @@ resource "aws_vpc" "asg_vpc" {
     cidr_block = "10.0.0.0/16"
     enable_dns_hostnames = "true"
 }
+data "aws_caller_identity" "current" {}
+
 resource "aws_subnet" "pub1" {
     vpc_id = aws_vpc.asg_vpc.id
     map_public_ip_on_launch = "true"
@@ -67,6 +69,7 @@ resource "aws_security_group" "asg_ec2" {
   }
   
 }
+data "aws_elb_service_account" "root"{}
 resource "aws_security_group" "lb_sg" {
     vpc_id = aws_vpc.asg_vpc.id
     
@@ -103,70 +106,98 @@ resource "aws_launch_template" "linux" {
 
   
 }
+resource "aws_lb_target_group" "alb_target" {
+    name="aws-lb-target"
+    vpc_id = aws_vpc.asg_vpc.id
+    port=80
+    protocol ="HTTP"
+    health_check {
+    interval            = 30
+    path                = "/"
+    port                = "traffic-port"
+    protocol            = "HTTP"
+    timeout             = 5
+    healthy_threshold   = 5
+    unhealthy_threshold = 2
+  }
+  
+  
+}
 resource "aws_s3_bucket" "alb_logs" {
-  bucket = "my-alb-logs-bucket"
+  bucket = "my-alb-logs-1234567"
   acl    = "private"
+  force_destroy = true
 
   tags = {
     Name = "My ALB Logs Bucket"
   }
 }
+
+# Create the IAM Role for ALB logging
 resource "aws_iam_role" "alb_logging_role" {
   name = "alb_logging_role"
 
   assume_role_policy = jsonencode({
-    Version = "31-08-2024"
+    Version = "2012-10-17"
     Statement = [
       {
         Action    = "sts:AssumeRole"
         Effect    = "Allow"
         Principal = {
-          Service = "delivery.logs.amazonaws.com"
+          Service= "elasticloadbalancing.amazonaws.com"
         }
-      },
+        }
+      
     ]
   })
 }
 
+# Create an IAM Policy that allows ALB to write logs to the S3 bucket
 resource "aws_iam_policy" "alb_logging_policy" {
   name        = "alb_logging_policy"
   description = "Allow ALB to write logs to S3"
   
   policy = jsonencode({
-    Version = "31-08-2024"
-    Statement = [
-      {
-        Action   = [
-          "s3:PutObject",
-          "s3:PutObjectAcl"
-        ]
-        Effect   = "Allow"
-        Resource = "${aws_s3_bucket.alb_logs.arn}/*"
-      }
-    ]
+    "Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "Statement1",
+			"Effect": "Allow",
+			"Action": [
+			    "s3:PutObject",
+          "s3:PutObjectAcl",
+
+
+			],
+			"Resource":"${aws_s3_bucket.alb_logs.arn}/*"
+          
+        
+		}
+	]
   })
 }
 
+# Attach the policy to the role
 resource "aws_iam_role_policy_attachment" "alb_logging_attachment" {
   policy_arn = aws_iam_policy.alb_logging_policy.arn
-  role     = aws_iam_role.alb_logging_role.name
+  role       = aws_iam_role.alb_logging_role.name
 }
+
+# Create the S3 Bucket Policy that allows ALB to put logs into the bucket
 resource "aws_s3_bucket_policy" "alb_logs_policy" {
   bucket = aws_s3_bucket.alb_logs.id
 
-  policy = jsonencode({
-    Version = "31-08-2024"
-    Statement = [
-      {
-        Action    = "s3:PutObject"
-        Effect    = "Allow"
-        Principal = {
-          Service = "delivery.logs.amazonaws.com"
-        }
-        Resource  = "${aws_s3_bucket.alb_logs.arn}/*"
-      }
-    ]
-  })
+  policy = data.aws_iam_policy_document.lb_logs.json
+}
+data "aws_iam_policy_document" "lb_logs" {
+  statement {
+    principals {
+      type        = "AWS"
+      identifiers = [data.aws_elb_service_account.root.arn]
+    }
+    actions   = ["s3:PutObject"]
+    resources = ["${aws_s3_bucket.alb_logs.arn}/*"]
+  }
 }
 
 
@@ -184,23 +215,6 @@ resource "aws_lb" "asg_lb" {
     
 
 
-  
-}
-resource "aws_lb_target_group" "alb_target" {
-    name="aws-lb-target"
-    vpc_id = aws_vpc.asg_vpc.id
-    port=80
-    protocol ="HTTP"
-    health_check {
-    interval            = 30
-    path                = "/"
-    port                = "traffic-port"
-    protocol            = "HTTP"
-    timeout             = 5
-    healthy_threshold   = 5
-    unhealthy_threshold = 2
-  }
-  
   
 }
 resource "aws_lb_listener" "aws_lb_listener" {
