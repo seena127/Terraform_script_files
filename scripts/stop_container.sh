@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
 
-# Stop the running container (if any)
-echo "Hi"
+cont_id= docker ps | awk -F' ' {print $1}'
+docker stop $cont_id
+docker rm -f $cont_id
