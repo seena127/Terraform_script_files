@@ -1,5 +1,12 @@
-set -e
+#!/bin/bash
 
-cont_id= docker ps | awk '{print $1}'
-docker stop $(docker ps -q)
+# Get the list of all running containers
+containers=$(docker ps -q)
 
+# Check if there are any running containers
+if [ -n "$containers" ]; then
+  echo "Stopping containers: $containers"
+  docker stop $containers
+else
+  echo "No containers are currently running."
+fi
