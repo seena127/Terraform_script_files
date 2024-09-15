@@ -30,7 +30,7 @@ resource "aws_ssm_parameter" "git_token" {
     name = "GIT_TOKEN"
     description = "github oauth token"
     type = "SecureString"
-    value = "#git webhook token"
+    value = #git webhook token
   
 }
 resource "aws_codebuild_project" "first" {
@@ -47,7 +47,7 @@ resource "aws_codebuild_project" "first" {
       privileged_mode = false
       environment_variable {
       name  = "OAUTH_TOKEN"
-      value = aws_ssm_parameter.git_token.value
+      value = aws_ssm_parameter.value
       type  = "PARAMETER_STORE"
     }
 
