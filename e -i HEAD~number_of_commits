@@ -260,4 +260,73 @@ Date:   Sat Aug 31 17:58:00 2024 +0530
 
 [33mcommit 69e12f3cb856034c0a68836f13f9da1e58d7e34e[m
 Merge: 5a3881d 02f3461
-Author: bsreenivasasarma <bsreeni
+Author: bsreenivasasarma <bsreenivasasarma1999@gmail.com>
+Date:   Sat Aug 31 15:37:31 2024 +0530
+
+    Merge https://github.com/seena127/Terraform_script_files
+
+[33mcommit 5a3881d1a55061b149d6ac12581b39121b6ac5ef[m
+Author: bsreenivasasarma <bsreenivasasarma1999@gmail.com>
+Date:   Sat Aug 31 15:35:54 2024 +0530
+
+    new
+
+[33mcommit 02f3461d2b9b10487e2810afbd934d7a7fc87f86[m
+Author: seena127 <45530763+seena127@users.noreply.github.com>
+Date:   Sat Aug 31 15:13:41 2024 +0530
+
+    Delete ec2-instance.tf
+
+[33mcommit 4751642c86e1276a319c9f83c315ab4a2cfae40d[m
+Author: seena127 <45530763+seena127@users.noreply.github.com>
+Date:   Sat Aug 31 14:52:50 2024 +0530
+
+    Rename Built in functions to Built in functions.md
+
+[33mcommit f99426684bb6490c2dc31995fa737c8f7b44bc91[m
+Author: seena127 <45530763+seena127@users.noreply.github.com>
+Date:   Sat Aug 31 14:52:23 2024 +0530
+
+    Create Built in functions
+
+[33mcommit 7523a94b8f4f61e98002344aee2478f2a8fc6617[m
+Author: bsreenivasasarma <bsreenivasasarma1999@gmail.com>
+Date:   Sat Aug 31 00:36:21 2024 +0530
+
+    ec2
+
+[33mcommit 7ffa44386fc5aa5403400e57e1ddf4f05d38bc23[m
+Author: bsreenivasasarma <bsreenivasasarma1999@gmail.com>
+Date:   Fri Aug 30 16:37:43 2024 +0530
+
+    new
+
+[33mcommit 07f62f656a03bf1f88b294bdcad45fae4d5b0a85[m
+Author: bsreenivasasarma <bsreenivasasarma1999@gmail.com>
+Date:   Fri Aug 30 16:35:40 2024 +0530
+
+    new
+
+[33mcommit bb2f97eb049e359bcd2b5e573261edc424429c6a[m
+Author: seena127 <45530763+seena127@users.noreply.github.com>
+Date:   Fri Aug 30 16:36:55 2024 +0530
+
+    Delete Desktop directory
+
+[33mcommit 7156f327412493cafa9f14b3f874ee2e870e2c85[m
+Author: bsreenivasasarma <bsreenivasasarma1999@gmail.com>
+Date:   Fri Aug 30 16:24:08 2024 +0530
+
+     terraform script
+
+[33mcommit a18e571084005db8f4aac3d1841245eb4e347835[m
+Author: bsreenivasasarma <bsreenivasasarma1999@gmail.com>
+Date:   Sat Jan 20 04:38:15 2024 +0530
+
+    Your commit message
+
+[33mcommit ad828babd2cc6d22a8a75970f3aad548b6c3aad2[m
+Author: seena127 <45530763+seena127@users.noreply.github.com>
+Date:   Fri Aug 30 16:19:47 2024 +0530
+
+    Initial commit
