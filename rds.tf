@@ -136,7 +136,7 @@ resource "aws_db_proxy" "rds_proxy"{
 
 
 }
-
+#output values 
 output "dbs_endpoint" {
     value = aws_db_instance.db0.endpoint
   
