@@ -33,7 +33,7 @@ egress {
 }
 }
 resource "aws_secretsmanager_secret" "rdssecret"{
-    name = "rds-demo-var-13607"
+    name = "rds-demo-var-136078"
 }
 resource "aws_secretsmanager_secret_version" "rdssecret01"{
    secret_id     = aws_secretsmanager_secret.rdssecret.id
@@ -53,7 +53,7 @@ resource "aws_db_instance" "db0" {
     
     instance_class = "db.t3.small"
     username = "master"
-    password = aws_secretsmanager_secret_version.rdssecret01.secret_string
+    password = aws_secretsmanager_secret_version.rdssecret01.secret_string #var.rds_pass
     db_name = "rdsdemo0013"
     parameter_group_name = "default.mysql8.0"
     skip_final_snapshot = false
@@ -64,8 +64,9 @@ resource "aws_db_instance" "db0" {
     db_subnet_group_name = aws_db_subnet_group.my_db_subnet_group.name
     vpc_security_group_ids = [ aws_security_group.rds_sg.id ]
     publicly_accessible = true
-    multi_az = true
+    multi_az = false
     backup_retention_period = 7
+
 
   
 }
@@ -80,6 +81,7 @@ resource "aws_db_instance" "db_read_replica" {
   replicate_source_db      = aws_db_instance.db0.identifier
   availability_zone      = element(module.vpc.availability_zones, count.index % length(module.vpc.availability_zones))
   skip_final_snapshot      = true
+  
 
   depends_on = [ aws_db_instance.db0 ]
 }
@@ -118,6 +120,29 @@ resource "aws_iam_role_policy" "rds_proxy_policy" {
     ]
   })
 }
+#By default rds proxy retrieves secret value from secret manager by acting as middle man if not we need to add pass in  db_instance as it require static value and enable secret log rotation to automatically fetch as in commented code
+# (Optional) Enable automatic rotation of DB credentials
+/*
+resource "aws_secretsmanager_secret" "rdssecret" {
+  name = "rds-demo-var-13607"
+}
+
+resource "aws_secretsmanager_secret_version" "rdssecret01" {
+  secret_id     = aws_secretsmanager_secret.rdssecret.id
+  secret_string = jsonencode({
+    username = "master"
+    password = var.rds_pass
+  })
+}
+resource "aws_secretsmanager_secret_rotation" "rds_rotation" {
+  secret_id = aws_secretsmanager_secret.rdssecret.id
+
+  rotation_lambda_arn = aws_lambda_function.rds_rotation.arn
+  rotation_rules {
+   automatically_after_days = 30
+  }
+}
+*/
 
 resource "aws_db_proxy" "rds_proxy"{
     name = "rdsdemoproxy1"
@@ -136,7 +161,8 @@ resource "aws_db_proxy" "rds_proxy"{
 
 
 }
-#output values 
+
+
 output "dbs_endpoint" {
     value = aws_db_instance.db0.endpoint
   
@@ -155,6 +181,7 @@ output "dbs_port" {
 output "read_replica_endpoints" {
   value = [for replica in aws_db_instance.db_read_replica : replica.endpoint]
 }
+
 output "rds_proxy_endpoint" {
   value = aws_db_proxy.rds_proxy.endpoint
 }
